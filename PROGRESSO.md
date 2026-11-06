@@ -2,7 +2,7 @@
 
 Atualizado automaticamente por `./trilha check`. Commite junto com o checkpoint.
 
-- [ ] 00-setup — Setup: WSL 2 + Ubuntu + ferramentas
+- [x] 00-setup — Setup: WSL 2 + Ubuntu + ferramentas — concluído em 2026-11-06
 - [ ] 01-shell — Shell: navegar, ler, filtrar, combinar
 - [ ] 02-vim — Vim de sobrevivência
 - [ ] 03-git — Git do dia a dia
