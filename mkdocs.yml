@@ -1,0 +1,81 @@
+site_name: Trilha Terminal
+site_description: Curso prático de terminal para devs iniciantes — WSL, shell, vim, git, Jira, Docker, Kubernetes e Claude Code.
+site_url: https://edi-labs-system.github.io/trilha-terminal/
+repo_url: https://github.com/edi-labs-system/trilha-terminal
+repo_name: edi-labs-system/trilha-terminal
+edit_uri: edit/main/docs/
+copyright: Conteúdo sob CC BY 4.0 · Scripts sob MIT
+
+theme:
+  name: material
+  language: pt-BR
+  icon:
+    logo: material/console
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: green
+      toggle:
+        icon: material/weather-night
+        name: Modo escuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: green
+      toggle:
+        icon: material/weather-sunny
+        name: Modo claro
+  features:
+    - navigation.sections
+    - navigation.footer
+    - navigation.top
+    - navigation.indexes
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+    - toc.follow
+
+nav:
+  - Início: index.md
+  - Como usar: como-usar.md
+  - Cronograma (4 semanas): cronograma.md
+  - Módulos:
+      - 00 · Setup WSL + Ubuntu: modulos/00-setup.md
+      - 01 · Shell: modulos/01-shell.md
+      - 02 · Vim: modulos/02-vim.md
+      - 03 · Git: modulos/03-git.md
+      - 04 · Jira: modulos/04-jira.md
+      - 05 · Docker: modulos/05-docker.md
+      - 06 · Kubernetes (k3s): modulos/06-k3s.md
+      - 07 · Claude Code: modulos/07-claude-code.md
+      - 08 · Capstone: modulos/08-capstone.md
+  - Referência:
+      - Colas rápidas: referencia/colas.md
+      - Quando dá errado: referencia/problemas.md
+  - Para mentores: mentores.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.keys
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+      clickable_checkbox: true
+
+extra_javascript:
+  - javascripts/progresso.js
+extra_css:
+  - stylesheets/extra.css

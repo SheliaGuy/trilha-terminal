@@ -1,0 +1,29 @@
+# Config da trilha-app. Corrija TODOS os itens marcados com TODO usando só o vim.
+# Os comentários podem ficar ou sair: o check ignora comentários e linhas em branco.
+
+app:
+  nome: trilha-app
+  # TODO 1: a versão correta é 1.0.0 (dica: cw no "0.0.9")
+  versao: 0.0.9
+  porta: 3000
+    log_nivel: info   # TODO 2: a indentação está errada. Deixe alinhado com "porta" (dica: 0 e depois 2x)
+
+# TODO 3: todo "trilha-stg" deste arquivo deve virar "trilha-prd" (dica: :%s/antigo/novo/g)
+banco:
+  host: db.trilha-stg.interno
+  nome: trilha-stg
+  usuario: app_trilha-stg
+
+# TODO 4: apague as 3 linhas do bloco "legado" inteiro, incluindo a chave (dica: 3dd)
+legado:
+  ativo: true
+  url: http://velho.interno
+
+rotas:
+  - /health
+  - /visitas
+  # TODO 5: duplique a linha "- /visitas" logo abaixo dela e troque por "- /sobre" (dica: yyp)
+
+# TODO 6: corrija o erro de digitação: "timout" → "timeout" (dica: /timout e depois x ou i)
+http:
+  timout_ms: 5000

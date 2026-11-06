@@ -1,0 +1,7 @@
+.md-typeset .checkpoint {
+  border-left: 4px solid var(--md-accent-fg-color);
+  padding: 0.6rem 1rem;
+  background: var(--md-code-bg-color);
+  border-radius: 4px;
+}
+.md-typeset table:not([class]) th { white-space: nowrap; }

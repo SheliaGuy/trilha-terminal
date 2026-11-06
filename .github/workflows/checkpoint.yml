@@ -1,0 +1,53 @@
+# Revalida no CI todo módulo que o PROGRESSO.md marca como concluído.
+# Itens que dependem da sua máquina (WSL, k3s) são conferidos pela evidência
+# gravada pelo check local em checkpoints/<módulo>/.check.
+name: checkpoint
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Instalar kubeconform
+        run: |
+          curl -sL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
+            | sudo tar -xz -C /usr/local/bin kubeconform
+          kubeconform -v
+          yq --version
+
+      - name: Verificar checkpoints
+        run: ./trilha verificar 2>&1 | tee resultado.txt; exit "${PIPESTATUS[0]}"
+        env:
+          NO_COLOR: "1"
+
+      - name: Resumo
+        if: always()
+        run: |
+          {
+            echo "## Progresso"
+            sed -n 's/^- \[x\] /- ✅ /p; s/^- \[ \] /- ⬜ /p' PROGRESSO.md
+            echo
+            echo "<details><summary>Saída completa</summary>"
+            echo
+            echo '```'
+            cat resultado.txt 2>/dev/null || true
+            echo '```'
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+# trilha — CLI da Trilha Terminal.
+#   ./trilha status              mostra seu progresso
+#   ./trilha check <NN> [--ci]   valida o checkpoint do módulo NN
+#   ./trilha exercicio <NN>      prepara o exercício do módulo (quando houver)
+#   ./trilha verificar           revalida (modo CI) todo módulo marcado como concluído
+#   ./trilha modulos             lista os módulos
+
+set -euo pipefail
+
+TRILHA_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export TRILHA_ROOT
+PROGRESSO="$TRILHA_ROOT/PROGRESSO.md"
+
+MODULOS=(
+  "00-setup|Setup: WSL 2 + Ubuntu + ferramentas"
+  "01-shell|Shell: navegar, ler, filtrar, combinar"
+  "02-vim|Vim de sobrevivência"
+  "03-git|Git do dia a dia"
+  "04-jira|Jira e o fluxo issue → branch → PR"
+  "05-docker|Docker e Docker Compose"
+  "06-k3s|Kubernetes com k3s"
+  "07-claude-code|Claude Code: prompt, CLAUDE.md, MCP e skills"
+  "08-capstone|Capstone: entrega ponta a ponta"
+)
+
+usage() { sed -n '2,8p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
+
+resolve() {
+  local nn="${1:-}"
+  nn="${nn#0}"; nn=$(printf '%02d' "${nn:-0}" 2>/dev/null) || true
+  local m
+  for m in "${MODULOS[@]}"; do
+    [[ "${m%%|*}" == "$nn"-* ]] && { echo "${m%%|*}"; return 0; }
+  done
+  echo "módulo inválido: '${1:-}'. Use ./trilha modulos" >&2
+  return 1
+}
+
+titulo() {
+  local id="$1" m
+  for m in "${MODULOS[@]}"; do [[ "${m%%|*}" == "$id" ]] && echo "${m#*|}"; done
+}
+
+ensure_progresso() {
+  [[ -f "$PROGRESSO" ]] && return
+  {
+    echo "# Meu progresso"
+    echo
+    echo "Atualizado automaticamente por \`./trilha check\`. Commite junto com o checkpoint."
+    echo
+    local m
+    for m in "${MODULOS[@]}"; do echo "- [ ] ${m%%|*} — ${m#*|}"; done
+  } >"$PROGRESSO"
+}
+
+marcar() {
+  local id="$1" hoje
+  hoje=$(date +%F)
+  ensure_progresso
+  # Reescreve a linha do módulo como concluída (idempotente).
+  local tmp
+  tmp=$(mktemp)
+  awk -v id="$id" -v t="$(titulo "$id")" -v d="$hoje" '
+    index($0, "] " id " ") { print "- [x] " id " — " t " — concluído em " d; next }
+    { print }' "$PROGRESSO" >"$tmp"
+  mv "$tmp" "$PROGRESSO"
+}
+
+cmd_status() {
+  ensure_progresso
+  local total=${#MODULOS[@]} feitos
+  feitos=$(grep -c '^- \[x\]' "$PROGRESSO" || true)
+  echo "Trilha Terminal — $feitos/$total módulos concluídos"
+  echo
+  sed -n 's/^- \[x\] /  ✅ /p; s/^- \[ \] /  ⬜ /p' "$PROGRESSO"
+  echo
+  local m
+  for m in "${MODULOS[@]}"; do
+    if ! grep -q "^- \[x\] ${m%%|*} " "$PROGRESSO"; then
+      echo "Próximo: ${m#*|} → ./trilha check ${m:0:2}"
+      return
+    fi
+  done
+  echo "Trilha completa. 🎉"
+}
+
+cmd_check() {
+  local id ci=0 arg
+  for arg in "$@"; do [[ "$arg" == "--ci" ]] && ci=1; done
+  id=$(resolve "${1:-}")
+  export TRILHA_CI="$ci"
+  local script="$TRILHA_ROOT/checks/$id.sh"
+  local dir="$TRILHA_ROOT/checkpoints/$id"
+  mkdir -p "$dir"
+
+  echo "Checkpoint $id — $(titulo "$id")"
+  # shellcheck source=lib/check.sh
+  source "$TRILHA_ROOT/lib/check.sh"
+  # shellcheck source=/dev/null
+  source "$script"
+
+  echo
+  printf 'Resultado: %d ok, %d falha(s), %d pulado(s)\n' "$PASS" "$FAIL" "$SKIP"
+  if ((FAIL > 0)); then
+    echo "Ainda não. Corrija os itens com ✘ e rode de novo."
+    return 1
+  fi
+  if [[ "$ci" == "0" ]]; then
+    {
+      echo "RESULTADO: OK"
+      echo "modulo: $id"
+      echo "data: $(date -Iseconds)"
+      echo "usuario: $(git -C "$TRILHA_ROOT" config user.name 2>/dev/null || whoami)"
+      echo "sistema: $(uname -srm)"
+      echo "itens: $PASS ok, $SKIP pulados"
+    } >"$dir/.check"
+    marcar "$id"
+    echo "Checkpoint aprovado. Commite 'checkpoints/$id' e o PROGRESSO.md e abra o PR."
+  else
+    echo "Checkpoint aprovado no CI."
+  fi
+}
+
+cmd_exercicio() {
+  local id
+  id=$(resolve "${1:-}")
+  local script="$TRILHA_ROOT/exercicios/preparar-$id.sh"
+  if [[ ! -f "$script" ]]; then
+    echo "O módulo $id não tem exercício preparado. Veja as instruções na página do módulo."
+    return 0
+  fi
+  bash "$script"
+}
+
+cmd_verificar() {
+  ensure_progresso
+  local ids falhou=0 id
+  ids=$(sed -n 's/^- \[x\] \([0-9][0-9]-[a-z0-9-]*\) .*/\1/p' "$PROGRESSO")
+  if [[ -z "$ids" ]]; then
+    echo "Nenhum módulo marcado como concluído no PROGRESSO.md. Nada a verificar."
+    return 0
+  fi
+  for id in $ids; do
+    echo "════════════════════════════════════════"
+    if ! (cmd_check "$id" --ci); then
+      falhou=1
+      echo "::error title=Checkpoint $id::o PROGRESSO.md marca $id como concluído, mas o check falhou no CI"
+    fi
+  done
+  return "$falhou"
+}
+
+cmd_modulos() {
+  local m
+  for m in "${MODULOS[@]}"; do printf '  %s  %s\n' "${m:0:2}" "${m#*|}"; done
+}
+
+case "${1:-}" in
+  status) cmd_status ;;
+  check) shift; cmd_check "$@" ;;
+  exercicio) shift; cmd_exercicio "$@" ;;
+  verificar) cmd_verificar ;;
+  modulos) cmd_modulos ;;
+  "" | -h | --help | ajuda) usage ;;
+  *) echo "comando desconhecido: $1" >&2; usage; exit 1 ;;
+esac

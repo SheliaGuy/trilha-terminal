@@ -1,0 +1,33 @@
+# Exercício de debug do módulo 06. NÃO corrija este arquivo:
+# aplique com ./trilha exercicio 06 e conserte o que está rodando no cluster.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: trilha-debug
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quebrado
+  namespace: trilha-debug
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quebrado
+  template:
+    metadata:
+      labels:
+        app: quebrado
+    spec:
+      containers:
+        - name: app
+          image: trilha-app:9.9.9
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            periodSeconds: 5

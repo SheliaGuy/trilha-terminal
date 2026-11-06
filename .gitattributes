@@ -1,0 +1,4 @@
+# Scripts sempre com LF, mesmo se alguém clonar no Windows
+* text=auto eol=lf
+*.sh text eol=lf
+trilha text eol=lf
