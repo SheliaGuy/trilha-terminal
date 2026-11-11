@@ -4,7 +4,7 @@ Atualizado automaticamente por `./trilha check`. Commite junto com o checkpoint.
 
 - [x] 00-setup — Setup: WSL 2 + Ubuntu + ferramentas — concluído em 2026-11-06
 - [x] 01-shell — Shell: navegar, ler, filtrar, combinar — concluído em 2026-11-10
-- [ ] 02-vim — Vim de sobrevivência
+- [x] 02-vim — Vim de sobrevivência — concluído em 2026-11-11
 - [ ] 03-git — Git do dia a dia
 - [ ] 04-jira — Jira e o fluxo issue → branch → PR
 - [ ] 05-docker — Docker e Docker Compose
