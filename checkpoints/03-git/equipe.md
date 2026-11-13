@@ -2,5 +2,5 @@
 
 | Papel | Pessoa |
 |---|---|
-| Tech lead | (definir) |
+| Tech lead | Ana |
 | Dev | (definir) |
