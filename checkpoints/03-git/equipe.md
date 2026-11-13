@@ -1,6 +1,5 @@
 # Equipe do projeto
 
 | Papel | Pessoa |
-|---|---|
-| Tech lead | Ana |
+| Tech lead | Ana, Bruno |
 | Dev | (definir) |
