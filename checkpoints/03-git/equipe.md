@@ -2,4 +2,4 @@
 
 | Papel | Pessoa |
 | Tech lead | Ana, Bruno |
-| Dev | (definir) |
+| Dev | Shelia Tarte |
