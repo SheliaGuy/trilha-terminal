@@ -2,5 +2,5 @@
 
 | Papel | Pessoa |
 |---|---|
-| Tech lead | (definir) |
+| Tech lead | Bruno |
 | Dev | (definir) |
