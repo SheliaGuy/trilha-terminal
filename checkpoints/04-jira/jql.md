@@ -1,8 +1,8 @@
 project = HA AND assignee = currentUser() AND resolution = Unresolved ORDER BY updated DESC
 
-Minhas issues não resolvidas, ordenadas pela atualização mais recente.
+Minhas issues não resolvidas, ordenadas pela atualização mais recente
 
-project = HA AND statusCategory != Done
+project = HA AND status = "To Do"
 
 Issues do projeto HA que ainda não foram concluídas.
 
