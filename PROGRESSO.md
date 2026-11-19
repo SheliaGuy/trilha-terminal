@@ -7,7 +7,7 @@ Atualizado automaticamente por `./trilha check`. Commite junto com o checkpoint.
 - [ ] 02-vim — Vim de sobrevivência
 - [ ] 03-git — Git do dia a dia
 - [x] 04-jira — Jira e o fluxo issue → branch → PR — concluído em 2026-11-18
-- [ ] 05-docker — Docker e Docker Compose
+- [x] 05-docker — Docker e Docker Compose — concluído em 2026-11-18
 - [ ] 06-k3s — Kubernetes com k3s
 - [ ] 07-claude-code — Claude Code: prompt, CLAUDE.md, MCP e skills
 - [ ] 08-capstone — Capstone: entrega ponta a ponta
